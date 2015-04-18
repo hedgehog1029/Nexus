@@ -1,5 +1,6 @@
 package io.github.hedgehog1029.nexus.event;
 
+import io.github.hedgehog1029.nexus.Settings;
 import io.github.hedgehog1029.nexus.server.event.IncomingRequestEvent;
 
 import java.io.IOException;
@@ -17,19 +18,40 @@ public class NexusListener implements Listener {
 	@SuppressWarnings("unchecked")
 	@EventHandler
 	public void request(IncomingRequestEvent event) throws IOException {
-		if (event.getMethod().equalsIgnoreCase("GET")) {
-			Headers responseHeaders = event.getExchange().getResponseHeaders();
-			responseHeaders.set("Content-Type", "text/plain");
-			event.getExchange().sendResponseHeaders(200, 0);
-			
-			int online = Bukkit.getServer().getOnlinePlayers().size();
-			Collection<? extends Player> players = Bukkit.getServer().getOnlinePlayers();
-			
-			JSONObject j = new JSONObject();
-			j.put("players", online);
-			j.put("online", players);
-			event.getExchange().getResponseBody().write(j.toJSONString().getBytes());
-			event.getExchange().getResponseBody().close();
+		if (event.getId() == "/") {
+			if (event.getMethod().equalsIgnoreCase("GET")) {
+				Headers responseHeaders = event.getExchange().getResponseHeaders();
+				responseHeaders.set("Content-Type", "text/plain");
+				event.getExchange().sendResponseHeaders(200, 0);
+				
+				int online = Bukkit.getServer().getOnlinePlayers().size();
+				Collection<? extends Player> players = Bukkit.getServer().getOnlinePlayers();
+				
+				JSONObject j = new JSONObject();
+				j.put("players", online);
+				j.put("online", players);
+				event.getExchange().getResponseBody().write(j.toJSONString().getBytes());
+				event.getExchange().getResponseBody().close();
+			}
+		} else if (event.getId() == "ping") {
+			if (event.getMethod().equalsIgnoreCase("GET")) {
+				Headers responseHeaders = event.getExchange().getResponseHeaders();
+				responseHeaders.set("Content-Type", "text/plain");
+				event.getExchange().sendResponseHeaders(200, 0);
+				
+				boolean isAuthorized = false;
+				if (convertStreamToString(event.getBody()) == Settings.get("UserKey")) {
+					
+				}
+				
+				JSONObject j = new JSONObject();
+				j.put("key", isAuthorized);
+				j.put("time", System.currentTimeMillis());
+			}
 		}
+	}
+	
+	static String convertStreamToString(java.io.InputStream is) {
+		try(java.util.Scanner s = new java.util.Scanner(is)) { return s.useDelimiter("\\A").hasNext() ? s.next() : ""; }
 	}
 }

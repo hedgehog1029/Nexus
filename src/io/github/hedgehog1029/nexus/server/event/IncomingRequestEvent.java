@@ -17,13 +17,15 @@ public class IncomingRequestEvent extends Event {
 	private InputStream body;
 	private Set<String> keySet;
 	private HttpExchange exchange;
+	private String id;
 	
-	public IncomingRequestEvent(HttpExchange exchange) {
+	public IncomingRequestEvent(HttpExchange exchange, String id) {
 		this.method = exchange.getRequestMethod();
 		this.headers = exchange.getRequestHeaders();
 		this.body = exchange.getRequestBody();
 		this.keySet = exchange.getRequestHeaders().keySet();
 		this.exchange = exchange;
+		this.id = id;
 	}
 	
 	public String getMethod() {
@@ -44,6 +46,10 @@ public class IncomingRequestEvent extends Event {
 	
 	public HttpExchange getExchange() {
 		return this.exchange;
+	}
+	
+	public String getId() {
+		return this.id;
 	}
 
 	@Override

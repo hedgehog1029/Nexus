@@ -13,7 +13,7 @@ public class HTTPServer {
 	
 	public HTTPServer(InetSocketAddress addr) throws IOException {
 		server = HttpServer.create(addr, 0);
-		server.createContext("/", new IncomingRequestCaller());
+		server.createContext("/", new IncomingRequestCaller("/"));
 		server.setExecutor(Executors.newCachedThreadPool());
 		server.start();
 		Logger.info("Server listening at address " + addr.getAddress().getHostAddress() + ":" + addr.getPort());
@@ -21,5 +21,9 @@ public class HTTPServer {
 	
 	public InetSocketAddress getAddress() {
 		return this.server.getAddress();
+	}
+	
+	public HttpServer getServer() {
+		return this.server;
 	}
 }
